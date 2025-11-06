@@ -38,7 +38,7 @@ ul {
 li {
   display: flex;
   justify-content: space-between;
-  background: #fafafa;
+  background: #f1e9e9;
   padding: 8px;
   border-radius: 6px;
   margin-bottom: 6px;
@@ -50,7 +50,7 @@ li span {
   flex: 1;
 }
 
-/* ✅ Quando item estiver comprado */
+/* Quando item estiver comprado check quando clicar no item */
 li.comprado span {
   text-decoration: line-through;
   opacity: 0.6;
