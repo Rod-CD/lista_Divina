@@ -1,0 +1,16 @@
+<h2>Lista de Compras ({{ total }} itens)</h2>
+
+<div class="input-area">
+  <input type="text" placeholder="Digite um item..." [(ngModel)]="novoItem">
+  <button (click)="adicionar()">Adicionar</button>
+</div>
+
+<ul>
+  <li *ngFor="let item of itens(); let i = index" [class.comprado]="item.comprado">
+    <span (click)="alternarComprado(i)">
+      {{ item.nome }}
+    </span>
+
+    <button class="remover" (click)="remover(i)">🗑</button>
+  </li>
+</ul>
