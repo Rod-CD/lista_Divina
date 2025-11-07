@@ -1,40 +1,43 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnDestroy, Injector, runInInjectionContext } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Database, ref, set, onValue, off } from '@angular/fire/database';
 
 @Component({
   selector: 'app-lista',
+  standalone: true,
   imports: [FormsModule, CommonModule],
   templateUrl: './lista.html',
   styleUrl: './lista.scss',
 })
-export class Lista {
+export class Lista implements OnDestroy {
+  private db = inject(Database);
+  private injector = inject(Injector);
+  private listaRef = ref(this.db, 'lista');
+  private unsubscribe: (() => void) | undefined;
+
   novoItem: string = '';
   itens = signal<{ nome: string; comprado: boolean }[]>([]);
 
   constructor() {
-  if (typeof window !== 'undefined') {  // ✅ garante que só roda no navegador
-    const itensSalvos = localStorage.getItem('lista-compras');
-    if (itensSalvos) {
-      this.itens.set = JSON.parse(itensSalvos);
-    }
+    runInInjectionContext(this.injector, () => {
+      this.unsubscribe = onValue(this.listaRef, (snapshot) => {
+        this.itens.set(snapshot.val() ?? []);
+      });
+    });
   }
-}
+
+  ngOnDestroy() {
+    if (this.unsubscribe) off(this.listaRef);
+  }
 
   salvar() {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('lista-compras', JSON.stringify(this.itens()));
-    }
+    set(this.listaRef, this.itens());
   }
 
   adicionar() {
     if (this.novoItem.trim() === '') return;
-
-    this.itens.update(lista => [
-      ...lista,
-      { nome: this.novoItem.trim(), comprado: false }
-    ]);
-
+    this.itens.update(lista => [...lista, { nome: this.novoItem.trim(), comprado: false }]);
     this.novoItem = '';
     this.salvar();
   }
@@ -46,9 +49,7 @@ export class Lista {
 
   alternarComprado(index: number) {
     this.itens.update(lista =>
-      lista.map((item, i) =>
-        i === index ? { ...item, comprado: !item.comprado } : item
-      )
+      lista.map((item, i) => i === index ? { ...item, comprado: !item.comprado } : item)
     );
     this.salvar();
   }
