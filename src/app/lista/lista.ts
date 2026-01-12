@@ -1,38 +1,33 @@
-import { Component, signal, inject, OnDestroy, Injector, runInInjectionContext } from '@angular/core';
+import { Component, signal, inject, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Database, ref, set, onValue, off } from '@angular/fire/database';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-lista',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, HttpClientModule],
   templateUrl: './lista.html',
   styleUrl: './lista.scss',
 })
 export class Lista implements OnDestroy {
-  private db = inject(Database);
-  private injector = inject(Injector);
-  private listaRef = ref(this.db, 'lista');
-  private unsubscribe: (() => void) | undefined;
+  private http = inject(HttpClient);
 
   novoItem: string = '';
   itens = signal<{ nome: string; comprado: boolean }[]>([]);
 
   constructor() {
-    runInInjectionContext(this.injector, () => {
-      this.unsubscribe = onValue(this.listaRef, (snapshot) => {
-        this.itens.set(snapshot.val() ?? []);
-      });
+    this.http.get<{ nome: string; comprado: boolean }[]>('/api/lista').subscribe(data => {
+      this.itens.set(data ?? []);
     });
   }
 
   ngOnDestroy() {
-    if (this.unsubscribe) off(this.listaRef);
+    // nothing to cleanup
   }
 
   salvar() {
-    set(this.listaRef, this.itens());
+    this.http.put('/api/lista', this.itens()).subscribe();
   }
 
   adicionar() {

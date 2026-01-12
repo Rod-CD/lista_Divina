@@ -6,11 +6,37 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { readFile, writeFile } from 'node:fs/promises';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
+app.use(express.json());
+
 const angularApp = new AngularNodeAppEngine();
+
+// Data file path for simple JSON storage
+const dataFile = join(process.cwd(), 'data', 'lista.json');
+
+app.get('/api/lista', async (req, res) => {
+  try {
+    const content = await readFile(dataFile, 'utf-8');
+    res.json(JSON.parse(content));
+  } catch (err: any) {
+    if (err?.code === 'ENOENT') res.json([]);
+    else res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/lista', async (req, res) => {
+  try {
+    const data = req.body;
+    await writeFile(dataFile, JSON.stringify(data, null, 2), 'utf-8');
+    res.json({ ok: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 /**
  * Example Express Rest API endpoints can be defined here.
