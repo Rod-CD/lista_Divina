@@ -1,6 +1,4 @@
 import { Component, signal } from '@angular/core';
-//import { RouterOutlet } from '@angular/router';
-
 import { Lista } from './lista/lista';
 
 @Component({

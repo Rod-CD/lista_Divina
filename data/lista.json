@@ -1,10 +1,14 @@
 [
   {
-    "nome": "Queijo coalho",
+    "nome": "Chazan",
     "comprado": false
   },
   {
-    "nome": "Queijo minas",
+    "nome": "carai",
+    "comprado": false
+  },
+  {
+    "nome": "alguma coisa",
     "comprado": false
   }
 ]

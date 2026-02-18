@@ -1,6 +1,17 @@
 h2 {
   margin-bottom: 12px;
   font-family: sans-serif;
+  color: #333;
+}
+
+.erro {
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-weight: 500;
 }
 
 .input-area {
@@ -14,6 +25,20 @@ input {
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  font-size: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #2e86ff;
+  box-shadow: 0 0 0 3px rgba(46, 134, 255, 0.1);
+}
+
+input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 button {
@@ -23,10 +48,28 @@ button {
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s, transform 0.1s;
+  font-size: 14px;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background: #0f62d6;
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:focus {
+  outline: 2px solid #2e86ff;
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 ul {
@@ -36,30 +79,97 @@ ul {
 }
 
 li {
-  display: flex;
-  justify-content: space-between;
-  background: #f1e9e9;
   padding: 8px;
   border-radius: 6px;
   margin-bottom: 6px;
-  cursor: pointer;
   align-items: center;
 }
 
-li span {
-  flex: 1;
+li.categoria {
+  background: none;
+  font-weight: 600;
+  color: #555;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-left: 0;
 }
 
-/* Quando item estiver comprado check quando clicar no item */
-li.comprado span {
+li.item {
+  display: flex;
+  justify-content: space-between;
+  background: #f1e9e9;
+  transition: background-color 0.2s;
+}
+
+li.item:hover {
+  background: #e8ddd9;
+}
+
+li.item .item-nome {
+  flex: 1;
+  text-align: left;
+  background: none;
+  color: #333;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  font-size: 16px;
+  font-weight: normal;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+li.item .item-nome:hover {
+  background: none;
+  color: #2e86ff;
+}
+
+li.item .item-nome:focus {
+  outline: 2px solid #2e86ff;
+  outline-offset: -2px;
+  background: rgba(46, 134, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* Quando item estiver comprado */
+li.comprado {
+  background: #e8f5e9;
+}
+
+li.comprado:hover {
+  background: #dcedc8;
+}
+
+li.comprado .item-nome {
   text-decoration: line-through;
   opacity: 0.6;
+  color: #888;
+}
+
+li.comprado .item-nome:hover {
+  color: #2e86ff;
+  opacity: 0.8;
 }
 
 .remover {
-  background: #ff4b4b;
+  background: #ff4b4b !important;
+  padding: 4px 8px;
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
-.remover:hover {
-  background: #c90000;
+.remover:hover:not(:disabled) {
+  background: #c90000 !important;
+}
+
+.vazio {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 6px;
 }

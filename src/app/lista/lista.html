@@ -1,16 +1,72 @@
-<h2>Lista de Compras ({{ total }} itens)</h2>
+<h2>Lista de Compras ({{ itens().length }} itens)</h2>
+
+@if (erro()) {
+  <div class="erro" role="alert">{{ erro() }}</div>
+}
 
 <div class="input-area">
-  <input type="text" placeholder="Digite um item..." [(ngModel)]="novoItem">
-  <button (click)="adicionar()">Adicionar</button>
+  <input 
+    type="text" 
+    placeholder="Digite um item..." 
+    [(ngModel)]="novoItem"
+    (keydown.enter)="adicionar()"
+    aria-label="Novo item"
+    [disabled]="carregando()">
+  <button 
+    (click)="adicionar()" 
+    [disabled]="carregando()"
+    aria-label="Adicionar item à lista">
+    {{ carregando() ? 'Adicionando...' : 'Adicionar' }}
+  </button>
 </div>
 
-<ul>
-  <li *ngFor="let item of itens(); let i = index" [class.comprado]="item.comprado">
-    <span (click)="alternarComprado(i)">
-      {{ item.nome }}
-    </span>
+<ul role="list">
+  @if (aComprar.length > 0) {
+    <li class="categoria" role="presentation">À comprar</li>
+    @for (itemRef of aComprar; track itemRef.index) {
+      <li role="listitem" class="item">
+        <button 
+          class="item-nome"
+          (click)="alternarComprado(itemRef.index)"
+          [title]="'Marcar como comprado: ' + itemRef.item.nome"
+          [attr.aria-pressed]="itemRef.item.comprado">
+          {{ itemRef.item.nome }}
+        </button>
+        <button 
+          class="remover" 
+          (click)="remover(itemRef.index)"
+          [title]="'Remover: ' + itemRef.item.nome"
+          aria-label="Remover item">
+          🗑
+        </button>
+      </li>
+    }
+  }
 
-    <button class="remover" (click)="remover(i)">🗑</button>
-  </li>
+  @if (comprados.length > 0) {
+    <li class="categoria" role="presentation">Comprado</li>
+    @for (itemRef of comprados; track itemRef.index) {
+      <li role="listitem" class="item comprado">
+        <button 
+          class="item-nome"
+          (click)="alternarComprado(itemRef.index)"
+          [title]="'Marcar como não comprado: ' + itemRef.item.nome"
+          [attr.aria-pressed]="itemRef.item.comprado">
+          {{ itemRef.item.nome }}
+        </button>
+        <button 
+          class="remover" 
+          (click)="remover(itemRef.index)"
+          [title]="'Remover: ' + itemRef.item.nome"
+          aria-label="Remover item">
+          🗑
+        </button>
+      </li>
+    }
+  }
+
+  @if (aComprar.length === 0 && comprados.length === 0 && !carregando()) {
+    <li class="vazio">Nenhum item adicionado</li>
+  }
 </ul>
+
